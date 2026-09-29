@@ -36,3 +36,15 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 nalgebra.workspace = true
 csv.workspace = true
 crc32fast.workspace = true
+
+[features]
+# Production builds.
+#
+# The `tauri` crate's build script computes `dev = !custom_protocol`, and `dev = true`
+# makes the binary load `devUrl` instead of the bundled frontend — on launch that is
+# "localhost refused to connect", not a blank window. Verified: without this feature
+# `cargo build --release` reports `cargo:dev=true`; with it, `cargo:dev=false`.
+#
+# Declaring it here is what lets both the Tauri CLI and an explicit
+# `--features hexadof-desktop/custom-protocol` turn production mode on.
+custom-protocol = ["tauri/custom-protocol"]

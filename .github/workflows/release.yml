@@ -62,15 +62,15 @@ jobs:
       - name: Test
         run: cargo test --workspace --locked
 
-      # NOT `cargo build --release`. The `tauri` crate's build script computes
-      # `dev = !custom_protocol` and only the Tauri CLI enables the `custom-protocol`
-      # feature. Built with raw cargo, the binary is a *development* build: it embeds
-      # `devUrl` and shows "localhost refused to connect" on launch instead of the
-      # bundled frontend. `--no-bundle` skips the MSI/NSIS step; the hub installs the
-      # portable exe.
-      - name: Build (Tauri, production)
-        working-directory: apps/desktop/src-tauri
-        run: ..\frontend\node_modules\.bin\tauri.cmd build --no-bundle
+      # NOT a bare `cargo build --release`. The `tauri` crate's build script computes
+      # `dev = !custom_protocol`, so without the feature the binary is a *development*
+      # build: it embeds `devUrl` and shows "localhost refused to connect" on launch
+      # instead of the bundled frontend. `tauri build` alone does not enable this —
+      # the app crate has to declare the feature, which it now does.
+      #
+      # Staged dist/HexaDOF/ plus this exe is what the hub installs.
+      - name: Build (production)
+        run: cargo build --release --locked --features hexadof-desktop/custom-protocol
 
       - name: Stage the product folder
         run: |

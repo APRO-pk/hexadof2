@@ -1,0 +1,96 @@
+name: Release
+
+# Publishing a tag builds the desktop app and attaches it to a GitHub Release, which is
+# what APRO Works downloads from. The asset name is deliberately version-free:
+#
+#   https://github.com/APRO-pk/hexadof2/releases/latest/download/hexadof-win64.zip
+#
+# `/releases/latest/download/<name>` requires a byte-identical filename on every
+# release, so a version in the filename would break the hub's update path.
+#
+# `workflow_dispatch` builds and uploads a run artifact instead of releasing.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        # A release build of a Tauri workspace is large. Windows runners start with
+        # limited free space on C:, and exhausting it fails the link step in ways that
+        # look like unrelated errors.
+        run: |
+          Remove-Item -Recurse -Force "$env:ProgramFiles\Android" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:ProgramFiles\Microsoft SDKs\Azure" -ErrorAction SilentlyContinue
+          Get-PSDrive C | Select-Object @{n='FreeGB';e={[math]::Round($_.Free/1GB,1)}}
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/desktop/frontend/package-lock.json
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix apps/desktop/frontend
+
+      # The frontend must exist BEFORE cargo runs: `tauri.conf.json` points frontendDist
+      # at ../frontend/dist and `generate_context!` embeds it at compile time, so an
+      # absent dist fails the build rather than producing an app with a blank window.
+      - name: Build frontend
+        run: npm run build --prefix apps/desktop/frontend
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+      - name: Build
+        run: cargo build --release --locked
+
+      - name: Stage the product folder
+        run: |
+          # The hub's installer strips one common root folder, so this layout lands
+          # hexadof-desktop.exe at the install root.
+          $stage = "dist/HexaDOF"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item target/release/hexadof-desktop.exe $stage
+          Get-ChildItem $stage | Select-Object Name, Length
+
+      - name: Package
+        run: |
+          Compress-Archive -Path "dist/HexaDOF" -DestinationPath "hexadof-win64.zip" -Force
+          Get-Item "hexadof-win64.zip" | Select-Object Name, Length
+
+      - name: Upload build artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hexadof-win64
+          path: hexadof-win64.zip
+          if-no-files-found: error
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: hexadof-win64.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

@@ -1,0 +1,19 @@
+[package]
+name = "hex-flight-data"
+description = "Flight-log import, binary and CSV codecs, timestamp validation, and derived channels."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+hex-telemetry.workspace = true
+# `float_roundtrip` keeps sample values bit-exact through mapping.json. The
+# default serde_json float parser can be one unit in the last place off, which
+# would shift a reopened session's time axis.
+serde = { workspace = true }
+serde_json = { workspace = true, features = ["float_roundtrip"] }
+thiserror.workspace = true
+csv.workspace = true
+crc32fast.workspace = true

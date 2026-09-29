@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/hex-core",
+    "crates/hex-dynamics",
+    "crates/hex-model",
+    "crates/hex-telemetry",
+    "crates/hex-flight-data",
+    "crates/hex-analysis",
+    "crates/hex-project",
+    "apps/desktop/src-tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT"
+authors = ["APRO Works"]
+repository = "https://github.com/apro-works/hexadof"
+
+[workspace.dependencies]
+hex-core = { path = "crates/hex-core" }
+hex-dynamics = { path = "crates/hex-dynamics" }
+hex-model = { path = "crates/hex-model" }
+hex-telemetry = { path = "crates/hex-telemetry" }
+hex-flight-data = { path = "crates/hex-flight-data" }
+hex-analysis = { path = "crates/hex-analysis" }
+hex-project = { path = "crates/hex-project" }
+
+nalgebra = { version = "0.33", features = ["serde-serialize"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+crc32fast = "1"
+csv = "1.3"
+toml = "0.8"
+tracing = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+opt-level = 1

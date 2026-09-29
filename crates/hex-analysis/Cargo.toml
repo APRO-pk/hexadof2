@@ -1,0 +1,13 @@
+[package]
+name = "hex-analysis"
+description = "Simulation and flight alignment, comparison, error metrics, and automatic event detection."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

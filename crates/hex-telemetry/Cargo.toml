@@ -1,0 +1,18 @@
+[package]
+name = "hex-telemetry"
+description = "USB serial transport, packet protocols, channel mapping, calibration, and orientation estimation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+nalgebra.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+crc32fast.workspace = true
+
+[dependencies.serialport]
+version = "4.6"

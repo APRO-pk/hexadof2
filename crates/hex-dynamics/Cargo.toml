@@ -1,0 +1,14 @@
+[package]
+name = "hex-dynamics"
+description = "Rigid-body and point-mass flight dynamics: state, forces, moments, environment, integrators, and events."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+nalgebra.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

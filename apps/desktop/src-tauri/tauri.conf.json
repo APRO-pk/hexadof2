@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "HexaDOF",
+  "version": "0.1.0",
+  "identifier": "works.apro.hexadof",
+  "build": {
+    "beforeDevCommand": "npm --prefix frontend run dev",
+    "devUrl": "http://localhost:5183",
+    "beforeBuildCommand": "npm --prefix frontend run build",
+    "frontendDist": "../frontend/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "HexaDOF",
+        "width": 1600,
+        "height": 1000,
+        "minWidth": 1180,
+        "minHeight": 720,
+        "resizable": true,
+        "center": true,
+        "decorations": true,
+        "theme": null
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost; worker-src 'self' blob:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "nsis"],
+    "icon": ["icons/icon.ico"],
+    "category": "Utility",
+    "shortDescription": "Six-degree-of-freedom flight dynamics and telemetry workspace",
+    "longDescription": "HexaDOF simulates, observes, records, replays, and compares the six-degree-of-freedom motion of a rocket or other rigid aerospace body. It is an analysis and instrumentation tool, and its results do not certify flight safety.",
+    "copyright": "APRO Works"
+  }
+}

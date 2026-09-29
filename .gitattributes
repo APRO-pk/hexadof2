@@ -1,0 +1,15 @@
+# Keep every text file as LF in the repository, whatever the platform it was
+# written on, and leave the binary assets alone. The whole tree is LF already,
+# so this only stops a Windows editor from introducing carriage returns.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.exe binary
+*.msi binary
+*.dll binary
+*.hlog binary

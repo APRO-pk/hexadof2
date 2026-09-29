@@ -1,0 +1,15 @@
+[package]
+name = "hex-core"
+description = "Units, coordinate frames, vector/quaternion math, timestamps, and validation primitives for HexaDOF."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+nalgebra.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+chrono.workspace = true

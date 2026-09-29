@@ -1,0 +1,189 @@
+/*
+ * HexaDOF design tokens.
+ *
+ * Two complete themes are defined here, and every colour the interface uses comes
+ * from a semantic token rather than a literal. The same semantic colour keeps the
+ * same meaning in both themes, so a warning is amber and an error is red whether
+ * the surface behind it is dark or light.
+ *
+ * Colour is never the only indicator: every status also carries a label or an
+ * icon, which is what keeps the interface readable for a colour-blind user and in
+ * a monochrome screenshot.
+ */
+
+:root {
+  /* Typography */
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Cascadia Mono", "JetBrains Mono", Consolas, "SF Mono", monospace;
+
+  --text-page-title: 26px;
+  --text-section: 17px;
+  --text-body: 13.5px;
+  --text-meta: 11.5px;
+  --text-numeric: 13px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Layout */
+  --topbar-height: 58px;
+  --panel-radius: 12px;
+  --control-radius: 7px;
+  --border-width: 1px;
+
+  /* Motion. Reduced motion is honoured in global.css. */
+  --transition-fast: 110ms ease;
+  --transition-medium: 180ms ease;
+
+  /* Z layers */
+  --z-panel: 1;
+  --z-sticky: 10;
+  --z-overlay: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+/* ---------------------------------------------------------------- dark theme */
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-base: #0e1116;
+  --surface-panel: #161b22;
+  --surface-panel-alt: #1b222b;
+  --surface-raised: #202832;
+  --surface-inset: #0b0e13;
+  --surface-hover: #232c37;
+  --surface-active: #2a3441;
+
+  --border-subtle: #232b35;
+  --border-default: #2c3643;
+  --border-strong: #3a4756;
+
+  --text-primary: #e8eef5;
+  --text-secondary: #9aa7b6;
+  --text-muted: #6f7d8c;
+  --text-inverse: #0e1116;
+
+  --accent: #38c7ff;
+  --accent-strong: #6bd7ff;
+  --accent-dim: #1e6e91;
+  --accent-soft: rgba(56, 199, 255, 0.14);
+  --accent-contrast: #06212c;
+
+  --warning: #f0b429;
+  --warning-soft: rgba(240, 180, 41, 0.15);
+  --warning-contrast: #2a1f04;
+
+  --error: #ff6b6b;
+  --error-soft: rgba(255, 107, 107, 0.14);
+  --error-contrast: #2e0a0a;
+
+  --success: #4cd97b;
+  --success-soft: rgba(76, 217, 123, 0.14);
+  --success-contrast: #052210;
+
+  --info: #7aa2f7;
+  --info-soft: rgba(122, 162, 247, 0.14);
+
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --focus-ring: 0 0 0 2px var(--surface-base), 0 0 0 4px var(--accent);
+
+  /* Chart series. Chosen to stay distinguishable in the dark theme and to remain
+   * separable when printed in greyscale by lightness alone. */
+  --series-1: #38c7ff;
+  --series-2: #f0b429;
+  --series-3: #4cd97b;
+  --series-4: #ff8fa3;
+  --series-5: #b39ddb;
+  --series-6: #7fd1c1;
+  --series-7: #ffab70;
+  --series-8: #9aa7b6;
+
+  --viewport-background: #0a0d12;
+  --viewport-grid: #1d2530;
+  --viewport-ground: #1a2530;
+}
+
+/* --------------------------------------------------------------- light theme */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-base: #f4f6f9;
+  --surface-panel: #ffffff;
+  --surface-panel-alt: #f7f9fc;
+  --surface-raised: #ffffff;
+  --surface-inset: #eef2f7;
+  --surface-hover: #e9eef5;
+  --surface-active: #dfe7f1;
+
+  --border-subtle: #e2e8f0;
+  --border-default: #cfd8e3;
+  --border-strong: #adbccc;
+
+  --text-primary: #16202b;
+  --text-secondary: #55647a;
+  --text-muted: #7b8a9e;
+  --text-inverse: #ffffff;
+
+  --accent: #1c62d6;
+  --accent-strong: #14479c;
+  --accent-dim: #7ba6ea;
+  --accent-soft: rgba(28, 98, 214, 0.1);
+  --accent-contrast: #ffffff;
+
+  --warning: #a86a00;
+  --warning-soft: rgba(168, 106, 0, 0.12);
+  --warning-contrast: #ffffff;
+
+  --error: #c02a2a;
+  --error-soft: rgba(192, 42, 42, 0.1);
+  --error-contrast: #ffffff;
+
+  --success: #1c7a45;
+  --success-soft: rgba(28, 122, 69, 0.12);
+  --success-contrast: #ffffff;
+
+  --info: #2b5db8;
+  --info-soft: rgba(43, 93, 184, 0.1);
+
+  --shadow-panel: 0 1px 2px rgba(22, 32, 43, 0.06), 0 6px 18px rgba(22, 32, 43, 0.06);
+  --shadow-modal: 0 24px 56px rgba(22, 32, 43, 0.18);
+  --focus-ring: 0 0 0 2px var(--surface-panel), 0 0 0 4px var(--accent);
+
+  --series-1: #1c62d6;
+  --series-2: #a86a00;
+  --series-3: #1c7a45;
+  --series-4: #c02a5c;
+  --series-5: #6a3fb5;
+  --series-6: #17787a;
+  --series-7: #b4541c;
+  --series-8: #55647a;
+
+  --viewport-background: #eef2f7;
+  --viewport-grid: #d6dee9;
+  --viewport-ground: #dfe7f1;
+}
+
+/* Compact density tightens every spacing token without touching a component. */
+:root[data-density="compact"] {
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 22px;
+  --topbar-height: 50px;
+  --text-page-title: 22px;
+  --text-section: 15px;
+}

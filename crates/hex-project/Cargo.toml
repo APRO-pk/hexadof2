@@ -1,0 +1,24 @@
+[package]
+name = "hex-project"
+description = "HexaDOF project files, run artifacts, and telemetry session persistence."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+hex-dynamics.workspace = true
+hex-model.workspace = true
+hex-flight-data.workspace = true
+hex-telemetry.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+crc32fast.workspace = true
+
+[dev-dependencies]
+hex-analysis.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+crc32fast.workspace = true

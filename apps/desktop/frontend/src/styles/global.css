@@ -1,0 +1,2333 @@
+/*
+ * HexaDOF base styles and component primitives.
+ *
+ * The visual language is a modern engineering instrument: clean geometry, moderate
+ * corner radii, fine borders, soft depth, and high information density with
+ * generous spacing. No glassmorphism, no gradients as decoration, no neon.
+ *
+ * Every interactive element has a visible focus state, and the reduced motion
+ * preference is honoured rather than overridden.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:root[data-reduced-motion="true"] *,
+:root[data-reduced-motion="true"] *::before,
+:root[data-reduced-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* ------------------------------------------------------------------ scrollbar */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+  background-clip: content-box;
+}
+
+/* ------------------------------------------------------------------- helpers */
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-numeric);
+}
+
+.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-numeric);
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  font-size: var(--text-meta);
+  color: var(--text-secondary);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.secondary {
+  color: var(--text-secondary);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--control-radius);
+}
+
+/* ------------------------------------------------------------------- layout */
+
+/*
+ * One bar across the top, one content area under it.
+ *
+ * The bar carries three groups: the product name and the mode switch on the
+ * left, the workspace tabs centred, and the project and status on the right.
+ *
+ * The tabs are centred on the window, which is what "centred" means to a reader,
+ * and that needs them out of flow: in a three column grid the two side columns
+ * are forced to the same width, which wastes the difference between the short
+ * left group and the long right one and clips the right one. The price is that
+ * the two side groups have to stay narrower than half the bar between them, so
+ * the status cluster is kept deliberately small, and the checks in
+ * tools/layout-check report any overlap rather than leaving it to the eye.
+ */
+.app-shell {
+  display: grid;
+  grid-template-rows: var(--topbar-height) 1fr;
+  height: 100%;
+}
+
+.app-topbar {
+  position: relative;
+  background: var(--surface-panel);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+  z-index: var(--z-sticky);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+/* Every label in the bar is a single line. A wrapped status label reads as two
+   unrelated labels and pushes the cluster out of alignment. */
+.topbar-right .meta,
+.topbar-right .row {
+  white-space: nowrap;
+}
+
+.app-main {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The workspace tabs, centred on the window. */
+.topnav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  z-index: 1;
+}
+
+.topnav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  border-radius: var(--control-radius);
+  border: var(--border-width) solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.topnav-item:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.topnav-item[aria-current="page"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.topnav-item svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.topnav-item .nav-badge {
+  margin-left: 0;
+}
+
+/*
+ * The status cluster is deliberately small.
+ *
+ * The tabs are centred on the window, so each side group has to stay inside half
+ * of what the tabs leave. The device is therefore a coloured dot with the state
+ * in its tooltip, and a project name is capped and finally dropped, rather than
+ * letting the cluster grow until it slides under the tabs.
+ */
+.topbar-device-label {
+  display: none;
+}
+
+/* Below this width the tab labels are dropped, so the tabs stay reachable on a
+   narrow window instead of crowding the status cluster. */
+@media (max-width: 1500px) {
+  .topnav-item .nav-label {
+    display: none;
+  }
+  .topnav-item {
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 1220px) {
+  .topbar-project {
+    display: none;
+  }
+}
+
+.page {
+  padding: var(--space-5);
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/*
+ * A page stacks cards and scrolls.
+ *
+ * Its children keep their natural height. Without this a page whose content is
+ * taller than the window shrinks every card to fit instead of scrolling, and the
+ * last card on the page is squeezed to a couple of pixels.
+ */
+.page > * {
+  flex: 0 0 auto;
+}
+
+.page-title {
+  font-size: var(--text-page-title);
+  font-weight: var(--weight-strong);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 76ch;
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+/*
+ * Column spans for the twelve column grid.
+ *
+ * Every span from one to twelve is declared. A span that is missing does not
+ * fail loudly: the element falls back to a single column, which silently
+ * squashes a card to a sixtieth of the width it was meant to have.
+ */
+.col-1 {
+  grid-column: span 1;
+}
+.col-2 {
+  grid-column: span 2;
+}
+.col-3 {
+  grid-column: span 3;
+}
+.col-4 {
+  grid-column: span 4;
+}
+.col-5 {
+  grid-column: span 5;
+}
+.col-6 {
+  grid-column: span 6;
+}
+.col-7 {
+  grid-column: span 7;
+}
+.col-8 {
+  grid-column: span 8;
+}
+.col-9 {
+  grid-column: span 9;
+}
+.col-10 {
+  grid-column: span 10;
+}
+.col-11 {
+  grid-column: span 11;
+}
+.col-12 {
+  grid-column: span 12;
+}
+
+/* Below this width a five or seven column card is too narrow to be useful, so
+   the layout collapses to pairs and full width rows. */
+@media (max-width: 1280px) {
+  .col-3,
+  .col-4 {
+    grid-column: span 6;
+  }
+  .col-5,
+  .col-6,
+  .col-7,
+  .col-8,
+  .col-9,
+  .col-10,
+  .col-11 {
+    grid-column: span 12;
+  }
+}
+
+/* --------------------------------------------------------------- card slots */
+
+/*
+ * A slot gives a card a definite height.
+ *
+ * A 3D view and a chart both size their canvas from the box they are placed in,
+ * so that box has to have a height the browser can resolve. A wrapper with only
+ * `min-height` leaves the card at its content height, and the content of both is
+ * an absolutely positioned or stretched canvas, which is nothing. The card then
+ * collapses and the page looks empty.
+ */
+.card-slot {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--slot-height, 320px);
+}
+
+.card-slot > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.card-slot.short {
+  --slot-height: 240px;
+}
+
+.card-slot.tall {
+  --slot-height: 380px;
+}
+
+/* A vertical stack of cards with one consistent gap. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* The column holding the 3D view and its display options. It fills whatever
+   height the surrounding grid gives it, and can shrink without clipping. */
+.viewport-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.viewport-column > .viewport {
+  flex: 1 1 auto;
+}
+
+/* -------------------------------------------------------------------- brand */
+
+/* The product name sits at the left of the bar, with the mode switch beside it. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+.brand-mark {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.brand-name {
+  font-weight: var(--weight-strong);
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.brand-sub {
+  font-size: 9.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+/* ------------------------------------------------------------- mode switch */
+
+/*
+ * The Advanced switch changes the whole interface, so it sits with the product
+ * name rather than inside Settings. It reads as the mode that is currently on:
+ * "Advanced" means every control is shown, "Simple" means the reduced set is.
+ */
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  padding: 4px 6px;
+  border: none;
+  border-radius: var(--control-radius);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.mode-switch:hover,
+.mode-switch:focus-visible {
+  background: var(--surface-raised);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.mode-switch-track {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--surface-inset);
+  border: var(--border-width) solid var(--border-default);
+  transition: background var(--transition-fast);
+}
+
+.mode-switch-track.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.mode-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.mode-switch-track.on .mode-switch-thumb {
+  transform: translateX(16px);
+  background: var(--surface-base);
+}
+
+.mode-switch-label {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------- tab badges */
+
+.nav-badge {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: var(--border-width) solid var(--border-default);
+  color: var(--text-secondary);
+}
+
+/* The notification count rides on the bell, so it adds no width to the bar. */
+.bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.bell-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  padding: 0 3px;
+  min-width: 13px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.5;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface-base);
+}
+
+/* ------------------------------------------------------------------- top bar */
+
+.topbar-project {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* A project name is capped, because the tabs are centred on the window and a
+     long name would otherwise slide under them. The full name and path are in
+     the tooltip, and the Overview screen spells both out. */
+  max-width: 14ch;
+}
+
+.topbar-project-name {
+  font-weight: var(--weight-medium);
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.dirty-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--warning);
+  flex: 0 0 auto;
+}
+
+/* -------------------------------------------------------------------- panel */
+
+.panel {
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+}
+
+.panel-title {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.panel-body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+.panel-body.flush {
+  padding: 0;
+}
+
+.panel-body.scroll {
+  overflow-y: auto;
+}
+
+.panel-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  /* The footer wraps rather than clipping. In a narrow column the last control
+     would otherwise be cut off by the panel edge. */
+  flex-wrap: wrap;
+  row-gap: var(--space-2);
+  gap: var(--space-3);
+}
+
+.panel.collapsed .panel-body,
+.panel.collapsed .panel-footer {
+  display: none;
+}
+
+.panel-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+}
+
+.panel-toggle:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+/* Status strip cards, used on the overview screen. */
+.status-card {
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.status-card-label {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.status-card-value {
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------- button */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 7px var(--space-3);
+  border-radius: var(--control-radius);
+  border: var(--border-width) solid var(--border-default);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast),
+    color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn-danger {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--error-soft);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: transparent;
+}
+
+.btn-sm {
+  padding: 4px var(--space-2);
+  font-size: 12px;
+}
+
+.btn-icon {
+  padding: 6px;
+}
+
+.btn-group {
+  display: inline-flex;
+  gap: 0;
+}
+
+.btn-group .btn {
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.btn-group .btn:first-child {
+  border-radius: var(--control-radius) 0 0 var(--control-radius);
+  margin-left: 0;
+}
+
+.btn-group .btn:last-child {
+  border-radius: 0 var(--control-radius) var(--control-radius) 0;
+}
+
+/* --------------------------------------------------------------------- form */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.field-label {
+  font-size: 11.5px;
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.field-help {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.field-error {
+  font-size: 10.5px;
+  color: var(--error);
+}
+
+.input,
+.select,
+.textarea {
+  background: var(--surface-inset);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--control-radius);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  padding: 6px var(--space-2);
+  width: 100%;
+  min-width: 0;
+  transition: border-color var(--transition-fast);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--border-strong);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.input.numeric,
+.input[type="number"] {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.input[type="number"]::-webkit-outer-spin-button,
+.input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 68px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.select {
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 26px;
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.input-unit {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.checkbox,
+.radio {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: 13px;
+  /* A checkbox label is short and must not be broken across lines when it sits
+     in a narrow panel footer next to a spacer. */
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.checkbox input,
+.radio input {
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch-track {
+  width: 34px;
+  height: 19px;
+  border-radius: 999px;
+  background: var(--surface-inset);
+  border: var(--border-width) solid var(--border-default);
+  position: relative;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  flex: 0 0 auto;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.switch[data-on="true"] .switch-track {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.switch[data-on="true"] .switch-thumb {
+  transform: translateX(15px);
+  background: var(--accent);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: var(--space-3);
+}
+
+/* ----------------------------------------------------------------------- tab */
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 7px var(--space-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tab[aria-selected="true"] {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+  font-weight: var(--weight-medium);
+}
+
+/* --------------------------------------------------------------------- badge */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  border: var(--border-width) solid transparent;
+  white-space: nowrap;
+}
+
+.badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.badge-neutral {
+  background: var(--surface-raised);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.badge-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.badge-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.badge-warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.badge-error {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.badge-info {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+/* --------------------------------------------------------------------- table */
+
+.table-wrap {
+  overflow: auto;
+  min-height: 0;
+}
+
+table.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+table.table th {
+  text-align: left;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: var(--weight-medium);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-default);
+  position: sticky;
+  top: 0;
+  background: var(--surface-panel);
+  z-index: var(--z-panel);
+  white-space: nowrap;
+}
+
+table.table td {
+  padding: 6px var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  vertical-align: top;
+}
+
+table.table tr:last-child td {
+  border-bottom: none;
+}
+
+table.table tbody tr:hover td {
+  background: var(--surface-hover);
+}
+
+table.table td.num,
+table.table th.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+table.table td.center,
+table.table th.center {
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------- notice */
+
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--control-radius);
+  border: var(--border-width) solid var(--border-default);
+  background: var(--surface-panel-alt);
+  align-items: flex-start;
+}
+
+.notice svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.notice-title {
+  font-weight: var(--weight-medium);
+  font-size: 13px;
+}
+
+.notice-detail {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.notice-warning {
+  border-color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.notice-warning svg {
+  color: var(--warning);
+}
+
+.notice-error {
+  border-color: var(--error);
+  background: var(--error-soft);
+}
+
+.notice-error svg {
+  color: var(--error);
+}
+
+.notice-success {
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+
+.notice-success svg {
+  color: var(--success);
+}
+
+.notice-info svg {
+  color: var(--info);
+}
+
+/* --------------------------------------------------------------- validation */
+
+.issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.issue {
+  border: var(--border-width) solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: var(--control-radius);
+  padding: var(--space-3);
+  background: var(--surface-panel-alt);
+}
+
+.issue-error {
+  border-left-color: var(--error);
+}
+
+.issue-warning {
+  border-left-color: var(--warning);
+}
+
+.issue-info {
+  border-left-color: var(--info);
+}
+
+.issue-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.issue-title {
+  font-weight: var(--weight-medium);
+  font-size: 13px;
+}
+
+.issue-code {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.issue-detail {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.issue-suggestion {
+  margin-top: var(--space-2);
+  font-size: 12.5px;
+  color: var(--text-primary);
+}
+
+.issue-suggestion::before {
+  content: "Fix: ";
+  color: var(--text-muted);
+}
+
+.issue-technical {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  background: var(--surface-inset);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.disclosure {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.disclosure:hover {
+  color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------- empty state */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--text-secondary);
+  min-height: 160px;
+}
+
+.empty svg {
+  width: 30px;
+  height: 30px;
+  color: var(--text-muted);
+}
+
+.empty-title {
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.empty-detail {
+  max-width: 52ch;
+  font-size: 12.5px;
+}
+
+/* -------------------------------------------------------------------- modal */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 9, 13, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh var(--space-4) var(--space-4);
+  z-index: var(--z-modal);
+}
+
+.modal {
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 620px;
+  max-height: 74vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal.wide {
+  max-width: 880px;
+}
+
+.modal-header {
+  padding: var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.modal-body {
+  padding: var(--space-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.modal-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ------------------------------------------------------------------ palette */
+
+.palette-input {
+  width: 100%;
+  border: none;
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 15px;
+  padding: var(--space-4);
+}
+
+.palette-input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+.palette-list {
+  overflow-y: auto;
+  max-height: 52vh;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-3);
+  border-radius: var(--control-radius);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.palette-item[data-active="true"] {
+  background: var(--accent-soft);
+}
+
+.palette-item svg {
+  width: 15px;
+  height: 15px;
+  color: var(--text-secondary);
+}
+
+.palette-group {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: var(--space-2) var(--space-3) 2px;
+}
+
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: var(--border-width) solid var(--border-default);
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+/* ------------------------------------------------------------------- toasts */
+
+.toast-stack {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: var(--z-toast);
+  max-width: 380px;
+}
+
+.toast {
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: var(--control-radius);
+  box-shadow: var(--shadow-modal);
+  padding: var(--space-3);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  animation: toast-in var(--transition-medium);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.toast-info {
+  border-left-color: var(--info);
+}
+.toast-warning {
+  border-left-color: var(--warning);
+}
+.toast-error {
+  border-left-color: var(--error);
+}
+.toast-success {
+  border-left-color: var(--success);
+}
+
+.toast-title {
+  font-weight: var(--weight-medium);
+  font-size: 13px;
+}
+
+.toast-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------- split pane */
+
+.workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 300px;
+  /* The results row carries a tab strip, so it is taller than a plain panel:
+     header, tabs, and a chart slot with its legend. */
+  grid-template-rows: minmax(0, 1fr) 340px;
+  grid-template-areas: "config viewport state" "bottom bottom bottom";
+  gap: var(--space-3);
+  padding: var(--space-3);
+  height: 100%;
+  min-height: 0;
+}
+
+.workspace.no-config {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-areas: "viewport state" "bottom bottom";
+}
+
+.workspace.no-state {
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-areas: "config viewport" "bottom bottom";
+}
+
+.workspace.no-config.no-state {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "viewport" "bottom";
+}
+
+.ws-config {
+  grid-area: config;
+}
+.ws-viewport {
+  grid-area: viewport;
+}
+.ws-state {
+  grid-area: state;
+}
+.ws-bottom {
+  grid-area: bottom;
+}
+
+/*
+ * The workspace holds three columns while the window can carry them.
+ *
+ * The threshold is a window width, and removing the sidebar widened the content
+ * by its own width, so the three column layout now stands down much later than
+ * it used to. Below this the state panel drops under the configuration, which is
+ * what an unusually narrow window needs.
+ */
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-areas: "config viewport" "state state" "bottom bottom";
+    grid-template-rows: minmax(0, 1fr) auto 300px;
+  }
+}
+
+/* ---------------------------------------------------------------- viewport */
+
+/* The view is a column: the canvas box, then the controls that drive it. */
+.viewport-frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.viewport {
+  position: relative;
+  flex: 1 1 auto;
+  /* A floor, so a viewport placed in a box with no resolvable height is still
+     visible rather than collapsed to nothing. */
+  min-height: 200px;
+  background: var(--viewport-background);
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+  border: var(--border-width) solid var(--border-subtle);
+}
+
+.viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viewport-overlay {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.viewport-overlay > * {
+  pointer-events: auto;
+}
+
+.viewport-source {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: 5px;
+  padding: 3px 8px;
+  color: var(--text-secondary);
+}
+
+/* A sentence about the data, not a label, so it is sentence case and wraps
+   rather than shouting across the canvas in capitals. */
+.viewport-note {
+  font-size: 11px;
+  line-height: 1.35;
+  max-width: 58ch;
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: 5px;
+  padding: 3px 8px;
+  color: var(--text-secondary);
+}
+
+.viewport-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+.viewport-legend {
+  position: absolute;
+  bottom: var(--space-3);
+  left: var(--space-3);
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--control-radius);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  max-width: 260px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.legend-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  flex: 0 0 auto;
+}
+
+.viewport-hud {
+  position: absolute;
+  bottom: var(--space-3);
+  right: var(--space-3);
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--control-radius);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 132px;
+}
+
+.hud-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 11px;
+}
+
+.hud-key {
+  color: var(--text-muted);
+}
+
+.hud-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ charts */
+
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+}
+
+.chart-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.chart-title {
+  font-size: 12.5px;
+  font-weight: var(--weight-medium);
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chart-canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.chart-readout {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: 5px;
+  padding: var(--space-2);
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+  min-width: 118px;
+}
+
+.series-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: center;
+}
+
+.series-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 4px;
+}
+
+.series-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.series-toggle[data-hidden="true"] {
+  opacity: 0.42;
+  text-decoration: line-through;
+}
+
+.series-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+/* ------------------------------------------------------------- result tabs */
+
+/* The result views sit in a strip under the panel header, one tab per kind of
+   answer a run gives. */
+.result-tabs {
+  flex: 0 0 auto;
+  padding: 0 var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.result-tabs .tabs {
+  border-bottom: none;
+}
+
+/*
+ * One plot per tab, filling the panel.
+ *
+ * The plot strip is a second row of tabs under the result strip: the result
+ * strip says which kind of answer, the plot strip says which chart. Splitting a
+ * chart's height six ways is what makes a plot unreadable, so one chart gets the
+ * whole panel instead.
+ */
+.plot-pane-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.plot-pane-stack > .tabs {
+  flex: 0 0 auto;
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.plot-pane {
+  flex: 1 1 auto;
+  min-height: 200px;
+}
+
+.plot-pane > .chart {
+  height: 100%;
+}
+
+/* With the plots open the results row takes more of the window, because a chart
+   and its series table do not fit in the plain result height. The 3D view keeps
+   a usable height at the smallest window the application allows. */
+.workspace.plots-open {
+  grid-template-rows: minmax(0, 1fr) 430px;
+}
+
+/* --------------------------------------------------------- example flights */
+
+.example-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.example-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  background: var(--surface-panel-alt);
+}
+
+.example-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.example-card-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.example-card-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: var(--weight-strong);
+}
+
+.example-card-summary {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.example-card-detail {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 92ch;
+}
+
+/* ---------------------------------------------------------------- timeline */
+
+.timeline-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.timeline-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* The phase chips name the shaded bands on the ruler, so the shading does not
+   have to be guessed at. */
+.timeline-phases {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.phase-chip {
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: var(--border-width) solid var(--border-default);
+  color: var(--text-secondary);
+}
+
+.phase-chip.phase-boost {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--text-primary);
+}
+
+.phase-chip.phase-coast {
+  border-color: color-mix(in srgb, var(--warning) 55%, transparent);
+}
+
+.phase-chip.phase-descent {
+  border-color: color-mix(in srgb, var(--success) 55%, transparent);
+}
+
+.timeline {
+  position: relative;
+  height: 96px;
+  background: var(--surface-inset);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--control-radius);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.timeline-track {
+  position: absolute;
+  inset: 0;
+}
+
+/* The vertical bands between the events that delimit the flight phases. */
+.timeline-phase {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.timeline-phase.phase-boost {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.timeline-phase.phase-coast {
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.timeline-phase.phase-descent {
+  background: color-mix(in srgb, var(--success) 9%, transparent);
+}
+
+/* The altitude profile of the visible window, drawn from a recorded channel. */
+.timeline-profile {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.timeline-profile-area {
+  fill: color-mix(in srgb, var(--accent) 16%, transparent);
+  stroke: none;
+}
+
+.timeline-profile-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 70%, transparent);
+  stroke-width: 0.5;
+  vector-effect: non-scaling-stroke;
+}
+
+/* The profile range is quoted at the top right, clear of the time tick labels
+   along the bottom edge. */
+.timeline-profile-label {
+  position: absolute;
+  right: 6px;
+  top: 3px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.timeline-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-subtle);
+  pointer-events: none;
+}
+
+.timeline-tick-label {
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.timeline-brush {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-left: var(--border-width) solid var(--accent);
+  border-right: var(--border-width) solid var(--accent);
+  pointer-events: none;
+}
+
+/* A transparent strip over the profile, because a time range is easiest to pick
+   by dragging across a shape you can see. */
+.timeline-brush-surface {
+  height: 22px;
+  margin-top: -6px;
+  border-radius: var(--control-radius);
+  background: var(--surface-inset);
+  border: var(--border-width) dashed var(--border-default);
+  cursor: ew-resize;
+}
+
+.timeline-hover {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-panel);
+  border: var(--border-width) solid var(--border-default);
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.timeline-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* The marker is a button so it can be activated to jump the playback. The
+   visible line is one pixel, and the hit area around it is wider so the target
+   is reachable without pixel hunting. */
+.timeline-event {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 11px;
+  margin-left: -5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.timeline-event::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 5px;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.75;
+}
+
+.timeline-event:hover::before,
+.timeline-event:focus-visible::before {
+  width: 2px;
+  opacity: 1;
+}
+
+.timeline-event:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.timeline-event-label {
+  position: absolute;
+  top: 4px;
+  transform: translateX(3px);
+  font-size: 9.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  pointer-events: none;
+  /* A chip, because the profile and the phase bands run behind the labels. */
+  background: var(--surface-inset);
+  padding: 0 3px;
+  border-radius: 3px;
+  z-index: 2;
+}
+
+/* The markers and their labels sit above the profile and the phase bands. */
+.timeline-event {
+  z-index: 2;
+}
+
+/* Two rows of labels, so a dense launch sequence does not stack four names on
+   top of each other. */
+.timeline-event-label.row-b {
+  top: 17px;
+}
+
+.timeline-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--text-primary);
+  pointer-events: none;
+}
+
+.timeline-progress {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--accent-soft);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- transport */
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.transport-time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  min-width: 132px;
+}
+
+/* ------------------------------------------------------------------- misc */
+
+.kv {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 3px var(--space-3);
+  font-size: 12.5px;
+}
+
+.kv dt {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.kv dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.copy-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.collapsible-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  padding: var(--space-1) 0;
+  width: 100%;
+  text-align: left;
+}
+
+.collapsible-head svg {
+  width: 13px;
+  height: 13px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.collapsible-head[data-open="true"] svg {
+  transform: rotate(90deg);
+}
+
+.divider {
+  height: var(--border-width);
+  background: var(--border-subtle);
+  margin: var(--space-1) 0;
+}
+
+.meter {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-inset);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--transition-fast);
+}
+
+.meter-fill.warning {
+  background: var(--warning);
+}
+
+.meter-fill.error {
+  background: var(--error);
+}
+
+.progress-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-inset);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border-default);
+  padding-left: var(--space-2);
+}
+
+.warn-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.warn-strip svg {
+  width: 14px;
+  height: 14px;
+  color: var(--warning);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

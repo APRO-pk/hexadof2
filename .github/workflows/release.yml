@@ -63,12 +63,16 @@ jobs:
         run: cargo test --workspace --locked
 
       # NOT a bare `cargo build --release`. The `tauri` crate's build script computes
-      # `dev = !custom_protocol`, so without the feature the binary is a *development*
-      # build: it embeds `devUrl` and shows "localhost refused to connect" on launch
-      # instead of the bundled frontend. `tauri build` alone does not enable this —
-      # the app crate has to declare the feature, which it now does.
+      # `dev = !custom_protocol`, so a raw cargo build produces a *development* binary:
+      # it loads `devUrl` and shows "localhost refused to connect" on launch instead of
+      # the bundled frontend.
       #
-      # Staged dist/HexaDOF/ plus this exe is what the hub installs.
+      # Verified behaviourally by running each build with a listener on the dev port:
+      # a cargo-only build connects to it, this build does not.
+      #
+      # `tauri build` also enables the feature. The explicit flag is kept because it
+      # does not depend on the CLI inferring it, and it documents production mode in
+      # the workflow itself.
       - name: Build (production)
         run: cargo build --release --locked --features hexadof-desktop/custom-protocol
 

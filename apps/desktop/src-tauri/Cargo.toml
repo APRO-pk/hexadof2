@@ -22,6 +22,9 @@ hex-telemetry.workspace = true
 hex-flight-data.workspace = true
 hex-analysis.workspace = true
 hex-project.workspace = true
+# The APRO Works import bridge. It owns the payload interpretation, the unit boundary
+# and the axis mapping, so the command layer above it stays thin.
+hex-bridge.workspace = true
 
 tauri = { version = "2", features = [] }
 tauri-plugin-dialog = "2"

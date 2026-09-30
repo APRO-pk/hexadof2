@@ -8,6 +8,7 @@ members = [
     "crates/hex-flight-data",
     "crates/hex-analysis",
     "crates/hex-project",
+    "crates/hex-bridge",
     "apps/desktop/src-tauri",
 ]
 
@@ -27,6 +28,7 @@ hex-telemetry = { path = "crates/hex-telemetry" }
 hex-flight-data = { path = "crates/hex-flight-data" }
 hex-analysis = { path = "crates/hex-analysis" }
 hex-project = { path = "crates/hex-project" }
+hex-bridge = { path = "crates/hex-bridge" }
 
 nalgebra = { version = "0.33", features = ["serde-serialize"] }
 serde = { version = "1", features = ["derive"] }

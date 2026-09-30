@@ -98,7 +98,11 @@ fn aero_summary(aero: &hex_model::AeroModel) -> String {
 }
 
 impl ModelView {
-    fn from_imported(model: &ImportedModel) -> Self {
+    /// Summarise an imported model for the interface.
+    ///
+    /// Public because the platform import path produces the same summary, and a second
+    /// rendering of a model would drift from this one.
+    pub fn from_imported(model: &ImportedModel) -> Self {
         let inertia = model.inertia();
         let reflected = model.reference_geometry;
         Self {

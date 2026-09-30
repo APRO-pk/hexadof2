@@ -86,6 +86,10 @@ pub fn run() {
             commands::model::model_example,
             commands::model::model_import_example,
             commands::model::model_save_to_project,
+            // APRO Works platform import
+            commands::platform::platform_status,
+            commands::platform::platform_list_models,
+            commands::platform::platform_import_model,
             // Simulation
             commands::simulation::simulation_validate,
             commands::simulation::simulation_run,

@@ -1,0 +1,19 @@
+[package]
+name = "hex-bridge"
+description = "Imports APRO Works platform artifacts as HexaDOF dynamics models."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+hex-core.workspace = true
+hex-model.workspace = true
+
+# The published SDK, exactly as any product app would depend on it.
+apro-contracts = { git = "https://github.com/APRO-pk/apro-client", tag = "v0.3.0" }
+apro-client = { git = "https://github.com/APRO-pk/apro-client", tag = "v0.3.0" }
+
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

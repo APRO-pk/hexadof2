@@ -8,6 +8,7 @@
 pub mod analysis;
 pub mod flight;
 pub mod model;
+pub mod platform;
 pub mod project;
 pub mod simulation;
 pub mod telemetry;
